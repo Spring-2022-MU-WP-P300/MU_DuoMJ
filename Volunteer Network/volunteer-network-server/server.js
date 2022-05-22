@@ -24,7 +24,7 @@ async function run() {
     const database = client.db("volunteer_network");
     const eventCollection = database.collection("events");
 
-    //post an event
+    //post an event , get events, get particular event by id
     app
       .post("/events", async (req, res) => {
         const event = req.body;
@@ -34,6 +34,12 @@ async function run() {
       .get("/events", async (req, res) => {
         const events = await eventCollection.find().toArray();
         res.send(events);
+      })
+      .get("/events/:id", async (req, res) => {
+        const event = await eventCollection.findOne({
+          _id: ObjectID(req.params.id),
+        });
+        res.send(event);
       });
   } finally {
     // await client.close();
