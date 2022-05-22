@@ -59,6 +59,13 @@ async function run() {
           res.send(result);
         } else res.status(404).send("Event not found!");
       });
+
+    //post registration info
+    app.post("/registeredInfo", async (req, res) => {
+      const registeredInfo = req.body;
+      const result = await eventCollection.insertOne(registeredInfo);
+      res.send(result);
+    });
   } finally {
     // await client.close();
   }
