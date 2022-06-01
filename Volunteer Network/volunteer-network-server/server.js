@@ -24,6 +24,7 @@ async function run() {
     const database = client.db("volunteer_network");
     const eventCollection = database.collection("events");
     const registeredCollection = database.collection("registered");
+    const userCollection = database.collection("users");
 
     //post an event , get events, get particular event by id ,delete particular event by id, update particular event by id
     app
@@ -61,7 +62,7 @@ async function run() {
         } else res.status(404).send("Event not found!");
       });
 
-    //post registration info, get all registration info, get particular registration info by emailId ,delete particular registration by id
+    //post registration info, get all registration info, get particular registration info by emailId ,delete particular registration by id,, update status by id
     app
       .post("/registeredInfo", async (req, res) => {
         const registeredInfo = req.body;
@@ -83,6 +84,60 @@ async function run() {
           _id: ObjectID(req.params.id),
         });
         res.send(result);
+      })
+      .patch("/registeredInfo/:id", async (req, res) => {
+        const exist = await registeredCollection.findOne({
+          _id: ObjectID(req.params.id),
+        });
+        if (exist) {
+          const result = await registeredCollection.updateOne(
+            { _id: ObjectID(req.params.id) },
+            { $set: req.body }
+          );
+          res.send(result);
+        } else res.status(404).send("Registration not found");
+      });
+
+    //post user , get users,get particular user by emailId,replace firebase google signIn or github signIn userInfo,role play updating for admin,get admin by emailId
+    app
+      .post("/users", async (req, res) => {
+        const user = req.body;
+        const result = await userCollection.insertOne(user);
+        res.send(result);
+      })
+      .get("/users", async (req, res) => {
+        const result = await userCollection.find({}).toArray();
+        res.send(result);
+      })
+      .get("/users/:emailId", async (req, res) => {
+        const result = await userCollection.findOne({
+          email: req.params.emailId,
+        });
+        res.send(result);
+      })
+      .put("/users", async (req, res) => {
+        const result = await userCollection.updateOne(
+          { email: req.body.email },
+          { $set: req.body },
+          { upsert: true }
+        );
+        res.send(result);
+      })
+      .put("/users/admin", async (req, res) => {
+        const result = await userCollection.updateOne(
+          { email: req.body.email },
+          { $set: { role: "admin" } },
+          { upsert: true }
+        );
+        res.send(result);
+      })
+      .get("/users/admin/:emailId", async (req, res) => {
+        const result = await userCollection.findOne({
+          email: req.params.emailId,
+          role: "admin",
+        });
+        if (result) res.send({ admin: true });
+        else res.send({ admin: false });
       });
   } finally {
     // await client.close();
