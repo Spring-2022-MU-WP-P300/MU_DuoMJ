@@ -84,17 +84,9 @@ async function run() {
           _id: ObjectID(req.params.id),
         });
         res.send(result);
-      })
-      .put("users", async (req, res) => {
-        const result = await userCollection.updateOne(
-          { email: req.body.email },
-          { $set: req.body },
-          { upsert: true }
-        );
-        res.send(result);
       });
 
-    //post user , get users,get particular user by emailId,replace firebase google signIn or github signIn userInfo
+    //post user , get users,get particular user by emailId,replace firebase google signIn or github signIn userInfo,role play updating for admin
     app
       .post("/users", async (req, res) => {
         const user = req.body;
@@ -109,6 +101,22 @@ async function run() {
         const result = await userCollection.findOne({
           email: req.params.emailId,
         });
+        res.send(result);
+      })
+      .put("/users", async (req, res) => {
+        const result = await userCollection.updateOne(
+          { email: req.body.email },
+          { $set: req.body },
+          { upsert: true }
+        );
+        res.send(result);
+      })
+      .put("/users/admin", async (req, res) => {
+        const result = await userCollection.updateOne(
+          { email: req.body.email },
+          { $set: { role: "admin" } },
+          { upsert: true }
+        );
         res.send(result);
       });
   } finally {
