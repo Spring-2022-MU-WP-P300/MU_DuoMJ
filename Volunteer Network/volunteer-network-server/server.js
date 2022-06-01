@@ -80,7 +80,7 @@ async function run() {
       })
       .delete("/registeredInfo/:id", async (req, res) => {
         const result = await registeredCollection.deleteOne({
-          _id: ObjectId(req.params.id),
+          _id: ObjectID(req.params.id),
         });
         res.send(result);
       });
