@@ -84,9 +84,17 @@ async function run() {
           _id: ObjectID(req.params.id),
         });
         res.send(result);
+      })
+      .put("users", async (req, res) => {
+        const result = await userCollection.updateOne(
+          { email: req.body.email },
+          { $set: req.body },
+          { upsert: true }
+        );
+        res.send(result);
       });
 
-    //post user , get users,get particular user by emailId
+    //post user , get users,get particular user by emailId,replace firebase google signIn or github signIn userInfo
     app
       .post("/users", async (req, res) => {
         const user = req.body;
