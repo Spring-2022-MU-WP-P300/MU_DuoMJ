@@ -7,12 +7,13 @@ import {
   SearchInputWrapper,
 } from "../StyledComponents/SearchInput";
 
-const SearchBar = () => {
+const SearchBar = ({ handleSearch }) => {
   return (
     <SearchInputWrapper>
       <MainSearchInput>
         <MainSearchInputItem>
           <SearchInput
+            onChange={(e) => handleSearch(e)}
             className="mb-2"
             type="text"
             placeholder="Search..."
