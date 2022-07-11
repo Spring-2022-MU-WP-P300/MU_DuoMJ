@@ -43,7 +43,4 @@ export const EventTitleDiv = styled.div`
 export const EventImage = styled.img`
   border-radius: 15px;
   cursor: pointer;
-  width: 100%;
-  height: 309px;
-  object-fit: cover;
 `;

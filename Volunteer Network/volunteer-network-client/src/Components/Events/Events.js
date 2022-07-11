@@ -11,7 +11,7 @@ const Events = () => {
   const handleSearch = (e) => {
     setSearchedText(e.target.value);
     const matchedEvents = events.filter((event) =>
-      event.name.toLowerCase().includes(e.target.value.toLowerCase())
+      event.name.toLowerCase().includes(searchedText.toLowerCase())
     );
     setDisplayEvents(matchedEvents);
   };

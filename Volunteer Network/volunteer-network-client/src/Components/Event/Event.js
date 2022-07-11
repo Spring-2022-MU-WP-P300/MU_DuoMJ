@@ -2,7 +2,6 @@ import React from "react";
 import { Col } from "react-bootstrap";
 import { useNavigate } from "react-router";
 import { EventImage, EventTitleDiv } from "../StyledComponents/Event";
-import loadingImage from "../../images/loading.png";
 
 const Event = ({ event: { name, image, _id } }) => {
   const navigate = useNavigate();
@@ -14,7 +13,11 @@ const Event = ({ event: { name, image, _id } }) => {
       <div>
         <EventImage
           onClick={handleEventClick}
-          src={image ? image : loadingImage}
+          src={
+            image
+              ? image
+              : "https://i.ibb.co/jWRshyq/ui-image-placeholder-wireframes-apps-260nw-1037719204.jpg"
+          }
           alt={name}
           loading="lazy"
           className="img-fluid"

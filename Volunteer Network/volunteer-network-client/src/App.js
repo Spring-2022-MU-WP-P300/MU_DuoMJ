@@ -1,9 +1,11 @@
 import AppRouter from "./Router/Router";
+import "bootstrap/dist/css/bootstrap.min.css";
+import AuthProvider from "./context/AuthProvider";
 function App() {
   return (
-    <div>
+    <AuthProvider>
       <AppRouter />
-    </div>
+    </AuthProvider>
   );
 }
 

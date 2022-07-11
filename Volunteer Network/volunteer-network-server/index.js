@@ -2,19 +2,17 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
-const { ObjectId: ObjectID } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const admin = require("firebase-admin");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
-
 //firebase admin initialization
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 admin.initializeApp({
   credential: admin.credential.cert({
-    projectType: process.env.FIREBASE_PROJECT_TYPE,
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    clientId: process.env.FIREBASE_CLIENT_ID,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+    projectId: serviceAccount.project_id,
+    clientEmail: serviceAccount.client_email,
+    privateKey: serviceAccount.private_key.replace(/\\n/g, "\n"),
   }),
 });
 
@@ -24,7 +22,7 @@ app.use(express.json({ limit: "50mb" }));
 
 app.get("/", (req, res) => res.send("Volunteer Network Server is running"));
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.bm2i5.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.spl8q.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -46,12 +44,12 @@ const verifyToken = async (req, res, next) => {
 async function run() {
   try {
     await client.connect();
-    const database = client.db("volunteer_network");
+    const database = client.db("volunteer_netwrok");
     const eventCollection = database.collection("events");
     const registeredCollection = database.collection("registered");
     const userCollection = database.collection("users");
 
-    //post an event , get events , get particular event by id, delete particular event by id ,update particular event by id
+    //post an event, get events, get particular event by id, delete particular event by id, update particular event by id
     app
       .post("/events", async (req, res) => {
         const event = req.body;
@@ -64,31 +62,30 @@ async function run() {
       })
       .get("/events/:id", async (req, res) => {
         const result = await eventCollection.findOne({
-          _id: ObjectID(req.params.id),
+          _id: ObjectId(req.params.id),
         });
         res.send(result);
       })
       .delete("/events/:id", async (req, res) => {
         const result = await eventCollection.deleteOne({
-          _id: ObjectID(req.params.id),
+          _id: ObjectId(req.params.id),
         });
         res.send(result);
       })
       .patch("/events/:id", async (req, res) => {
         const exist = await eventCollection.findOne({
-          _id: ObjectID(req.params.id),
+          _id: ObjectId(req.params.id),
         });
-
         if (exist) {
           const result = await eventCollection.updateOne(
-            { _id: ObjectID(req.params.id) },
+            { _id: ObjectId(req.params.id) },
             { $set: req.body }
           );
           res.send(result);
-        } else res.status(404).send("Event not found!");
+        } else res.status(404).send("Event not found");
       });
 
-    //post registration info , get all registration info, get particular registration info by emailId, delete particular registration by id, update status by id
+    //post registration info, get all registration info, get particular registration by emailId, delete particular registration by id, update status by id
     app
       .post("/registeredInfo", async (req, res) => {
         const registeredInfo = req.body;
@@ -114,24 +111,24 @@ async function run() {
       })
       .delete("/registeredInfo/:id", async (req, res) => {
         const result = await registeredCollection.deleteOne({
-          _id: ObjectID(req.params.id),
+          _id: ObjectId(req.params.id),
         });
         res.send(result);
       })
       .patch("/registeredInfo/:id", async (req, res) => {
         const exist = await registeredCollection.findOne({
-          _id: ObjectID(req.params.id),
+          _id: ObjectId(req.params.id),
         });
         if (exist) {
           const result = await registeredCollection.updateOne(
-            { _id: ObjectID(req.params.id) },
+            { _id: ObjectId(req.params.id) },
             { $set: req.body }
           );
           res.send(result);
         } else res.status(404).send("Registration not found");
       });
 
-    //post user , get users ,get particular user by emailId, replace firebase google signIn or github signIn userInfo , role play updating for admin , get admin by emailId
+    //post user, get users, get particular user by emailId, replace firebase google sign in or github sign in user info, role play updating for admin, get admin by emailId
     app
       .post("/users", async (req, res) => {
         const user = req.body;
@@ -184,7 +181,7 @@ async function run() {
         else res.send({ admin: false });
       });
   } finally {
-    // await client.close();
+    //await client.close();
   }
 }
 run().catch(console.dir);
